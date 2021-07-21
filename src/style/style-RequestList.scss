@@ -1,0 +1,124 @@
+$gray: #393d49;
+$yellow: #fecf00;
+$yellow-active: #f2b400;
+$yellow-hover: #fee000;
+$font: "Segoe UI", semi-serf;
+
+.input-button {
+  font-family: $font;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  background-color: $yellow;
+  margin-top: 10px;
+
+  &:active {
+    background-color: $yellow-active;
+  }
+
+  &:hover {
+    background-color: $yellow-hover;
+  }
+
+}
+
+.input-text {
+  height: 100px;
+  width: 70%;
+  box-sizing: border-box;
+  padding: 7px;
+  font-weight: 400;
+  font-size: 14px;
+  font-family: $font;
+  margin-right: 30%;
+  border-color: #dddddd;
+  border-radius: 6px;
+  resize: none;
+  outline: none;
+  -moz-appearance: none;
+
+  &:active {
+    border-color: #dddddd;
+  }
+}
+
+.container {
+  color: $gray;
+  font-family: $font;
+}
+
+.dx-widget {
+  color: $gray;
+  font-family: $font;
+}
+
+.dx-texteditor.dx-state-active.dx-editor-filled,
+.dx-texteditor.dx-state-active.dx-editor-outlined,
+.dx-texteditor.dx-state-active.dx-editor-underlined,
+.dx-texteditor.dx-state-focused.dx-editor-filled,
+.dx-texteditor.dx-state-focused.dx-editor-outlined,
+.dx-texteditor.dx-state-focused.dx-editor-underlined {
+  border-color: $yellow-active;
+}
+
+.dx-list:not(.dx-list-select-decorator-enabled) .dx-list-item.dx-state-active {
+  background-color: $yellow;
+  color: $gray;
+}
+
+.dx-list:not(.dx-list-select-decorator-enabled) .dx-list-item.dx-state-focused {
+  background-color: $yellow;
+  color: $gray;
+}
+
+td {
+  color: $gray;
+}
+
+.dx-texteditor.dx-state-hover {
+  border-color: $yellow;
+}
+
+.dx-list .dx-empty-message, .dx-list-item {
+  color: $gray;
+}
+
+.dx-datagrid-headers {
+  color: $gray;
+  border-bottom: none;
+  background-color: $yellow;
+}
+
+.dx-datagrid-borders > .dx-datagrid-pager {
+  border-top: none;
+}
+
+.dx-texteditor.dx-editor-outlined {
+  margin-right: 30%;
+}
+
+.dx-popup-bottom .dx-button {
+  background-color: $yellow;
+  color: $gray;
+
+  &:active {
+    background-color: $yellow-active;
+  }
+
+  &:hover {
+    background-color: $yellow-hover;
+  }
+}
+
+.popup-content {
+  color: $gray;
+  font-family: $font;
+  font-size: 16px;
+}
+
+.dx-toolbar-before {
+  width: 100%;
+}
+

@@ -1,0 +1,113 @@
+.input-button {
+  font-family: "Segoe UI", semi-serf;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: none;
+  background-color: #fecf00;
+  margin-top: 10px;
+}
+.input-button:active {
+  background-color: #f2b400;
+}
+.input-button:hover {
+  background-color: #fee000;
+}
+
+.input-text {
+  height: 100px;
+  width: 70%;
+  box-sizing: border-box;
+  padding: 7px;
+  font-weight: 400;
+  font-size: 14px;
+  font-family: "Segoe UI", semi-serf;
+  margin-right: 30%;
+  border-color: #dddddd;
+  border-radius: 6px;
+  resize: none;
+  outline: none;
+  -moz-appearance: none;
+}
+.input-text:active {
+  border-color: #dddddd;
+}
+
+.container {
+  color: #393d49;
+  font-family: "Segoe UI", semi-serf;
+}
+
+.dx-widget {
+  color: #393d49;
+  font-family: "Segoe UI", semi-serf;
+}
+
+.dx-texteditor.dx-state-active.dx-editor-filled,
+.dx-texteditor.dx-state-active.dx-editor-outlined,
+.dx-texteditor.dx-state-active.dx-editor-underlined,
+.dx-texteditor.dx-state-focused.dx-editor-filled,
+.dx-texteditor.dx-state-focused.dx-editor-outlined,
+.dx-texteditor.dx-state-focused.dx-editor-underlined {
+  border-color: #f2b400;
+}
+
+.dx-list:not(.dx-list-select-decorator-enabled) .dx-list-item.dx-state-active {
+  background-color: #fecf00;
+  color: #393d49;
+}
+
+.dx-list:not(.dx-list-select-decorator-enabled) .dx-list-item.dx-state-focused {
+  background-color: #fecf00;
+  color: #393d49;
+}
+
+td {
+  color: #393d49;
+}
+
+.dx-texteditor.dx-state-hover {
+  border-color: #fecf00;
+}
+
+.dx-list .dx-empty-message, .dx-list-item {
+  color: #393d49;
+}
+
+.dx-datagrid-headers {
+  color: #393d49;
+  border-bottom: none;
+  background-color: #fecf00;
+}
+
+.dx-datagrid-borders > .dx-datagrid-pager {
+  border-top: none;
+}
+
+.dx-texteditor.dx-editor-outlined {
+  margin-right: 30%;
+}
+
+.dx-popup-bottom .dx-button {
+  background-color: #fecf00;
+  color: #393d49;
+}
+.dx-popup-bottom .dx-button:active {
+  background-color: #f2b400;
+}
+.dx-popup-bottom .dx-button:hover {
+  background-color: #fee000;
+}
+
+.popup-content {
+  color: #393d49;
+  font-family: "Segoe UI", semi-serf;
+  font-size: 16px;
+}
+
+.dx-toolbar-before {
+  width: 100%;
+}
+
+/*# sourceMappingURL=style-RequestList.css.map */
