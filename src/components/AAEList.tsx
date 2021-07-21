@@ -7,122 +7,95 @@ import FileUploader from "devextreme-react/file-uploader";
 import {IBuilding, ICabinet, IAAERequest} from "../Types";
 import "../style/style-AAEList.css"
 import "../style/media-queries.css"
-
-
-// Интерфейс, реализующий состояния компонента AAEList
-interface IAAEListState {
-
-    // buildings - список зданий, принимающийся с сервера
-    buildings: IBuilding[];
-
-    // requests - список заявок, принмающийся с сервера
-    requests: IAAERequest[];
-
-    // inputText - текст заявки
-    inputText: string;
-
-    // selectedBuilding - выбранное здание
-    selectedBuilding: IBuilding;
-
-    // selectedCabinet - выбранны кабинет
-    selectedCabinet: ICabinet;
-
-    // dialogShow - флаг, отвечащий за открытие диалогового окна
-    dialogShow: boolean;
-
-    // isSent - флаг, показывающий успешно ли отправлена заявка
-    isSent: boolean;
-
-    // file - поле, хранящие отправляем файл или null, если файла нет
-    file: any;
-
-    // dropDownBoxRefB - ссылка на первый DropDownBox объект
-    dropDownBoxRefB: React.RefObject<DropDownBox>;
-
-    // dropDownBoxRefC - ссылка на второй DropDownBox объект
-    dropDownBoxRefC: React.RefObject<DropDownBox>;
-
-    // fileUploaderRef - ссылка на FileUploader объект
-    fileUploaderRef: React.RefObject<FileUploader>;
-}
+import {useEffect, useRef, useState} from "react";
 
 //Ссылки для fetch запросов
-interface IAAEListProps {
+interface API {
     getUrlAAERequests: string;
     getUrlBuildings: string;
     postUrlAAERequests: string;
 }
 
-
 //Класс, реализующий контрол «Административно-хозяйственные заявки»
-export default class AAEList extends React.Component<IAAEListProps, IAAEListState> {
+const AAEList: React.FC<API> = ({getUrlAAERequests, getUrlBuildings, postUrlAAERequests}) => {
 
-    constructor(props: IAAEListProps) {
-        super(props);
+    // buildings - список зданий, принимающийся с сервера
+    const [buildings, setBuildings] = useState<IBuilding[]>([]);
 
-        this.state = {
-            buildings: [], requests: [], inputText: "", selectedBuilding: {Id: "", Name: "", Rooms: []},
-            selectedCabinet: {Id: "", Name: ""}, dialogShow: false, isSent: false,
-            dropDownBoxRefB: React.createRef(), dropDownBoxRefC: React.createRef(),
-            fileUploaderRef: React.createRef(), file: null
-        };
+    // requests - список заявок, принмающийся с сервера
+    const [requests, setRequests] = useState<IAAERequest[]>([]);
 
-        //Привязка методов к контексту
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
+    // inputText - текст заявки
+    const [inputText, setInputText] = useState("");
 
-    //Метод, делающий GET запрос на сервер для получения списка заявок
-    async fetchRequests() {
-        try {
-            const response = await fetch(this.props.getUrlAAERequests);
-            const data = await response.json();
-            this.setState({requests: data.AAERequests});
-        } catch (error) {
-            console.log(error);
+    // selectedBuilding - выбранное здание
+    const [selectedBuilding, setSelectedBuilding] = useState<IBuilding>({Id: "", Name: "", Rooms: []});
+
+    // selectedCabinet - выбранны кабинет
+    const [selectedCabinet, setSelectedCabinet] = useState<ICabinet>({Id: "", Name: ""});
+
+    // dialogShow - флаг, отвечащий за открытие диалогового окна
+    const [dialogShow, setDialogShow] = useState(false);
+
+    // isSent - флаг, показывающий успешно ли отправлена заявка
+    const [isSent, setIsSent] = useState(true);
+
+    // file - поле, хранящее отправляемый файл или null, если файла нет
+    const [file, setFile] = useState<any>(null);
+
+    // dropDownBoxRefB - ссылка на первый DropDownBox объект
+    const dropDownBoxRefB = useRef<DropDownBox>(null);
+
+    // dropDownBoxRefC - ссылка на второй DropDownBox объект
+    const dropDownBoxRefC = useRef<DropDownBox>(null);
+
+    // fileUploaderRef - ссылка на FileUploader объект
+    const fileUploaderRef = useRef<FileUploader>(null);
+
+    useEffect(() => {
+        async function fetchBuildings() {
+            try {
+                const response = await fetch(getUrlBuildings);
+                const data = await response.json();
+                setBuildings(data.buildings);
+            } catch (error) {
+                console.log(error);
+            }
         }
-    }
+        fetchBuildings();
+    },[getUrlBuildings]);
 
-    //Метод, делающий GET запрос на сервер для получения списка зданий
-    async fetchBuildings() {
-        try {
-            const response = await fetch(this.props.getUrlBuildings);
-            const data = await response.json();
-            this.setState({buildings: data.buildings});
-        } catch (error) {
-            console.log(error);
+    useEffect(() => {
+        //Метод, делающий GET запрос на сервер для получения списка заявок
+        async function fetchRequests() {
+            try {
+                const response = await fetch(getUrlAAERequests);
+                const data = await response.json();
+                setRequests(data.AAERequests);
+            } catch (error) {
+                console.log(error);
+            }
         }
-    }
-
-    //При монтировании компонента делаются два запроса для построенния dataGrid
-    componentDidMount() {
-        this.fetchRequests()
-        this.fetchBuildings()
-    }
-
-    //Обновляет компонент, если заявка успешно отправлена. Делается повторный запрос на список всех заявок
-    componentDidUpdate() {
-        if (this.state.isSent) {
-            this.fetchRequests();
-            this.setState({isSent: false});
-        }
-    }
+        if (isSent) fetchRequests();
+        setIsSent(false);
+    },[isSent, getUrlAAERequests]);
 
     /*Отслеживание клика на кнопку отправить
     * Происходить POST запрос к серверу и отправка JSON строки
     * Если запрос успешно отправлен, то произойдет обновление таблицы и появится диалоговое окно*/
-    async handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
 
         let formData = new FormData();
-        formData.append("file", this.state.file);
+        formData.append("file", file);
         formData.append("AAERequest", JSON.stringify({
-                Text: this.state.inputText,
-                Building: this.state.selectedBuilding.Name,
-                Cabinet: this.state.selectedCabinet.Name,
+                Text: inputText,
+                Building: selectedBuilding.Name,
+                Cabinet: selectedCabinet.Name,
             }
         ));
 
-        fetch(this.props.postUrlAAERequests, {
+        fetch(postUrlAAERequests, {
             method: "POST",
             body: formData
         })
@@ -132,8 +105,8 @@ export default class AAEList extends React.Component<IAAEListProps, IAAEListStat
                     const error = (data) || response.status;
                     return Promise.reject(error);
                 } else {
-                    this.setState({isSent: true});
-                    this.setState({dialogShow: true});
+                    setIsSent(true);
+                    setDialogShow(true);
                 }
             })
             .catch(error => {
@@ -141,133 +114,128 @@ export default class AAEList extends React.Component<IAAEListProps, IAAEListStat
                 console.log(error);
             })
 
-        this.setState({
-            inputText: "", file: null, selectedBuilding: {Id: "", Name: "", Rooms: []},
-            selectedCabinet: {Id: "", Name: ""}
-        });
+        setInputText("");
+        setSelectedBuilding({Id: "", Name: "", Rooms: []});
+        setSelectedCabinet({Id: "", Name: ""});
 
         // Удаление загруженного файла со старницы
-        this.state.fileUploaderRef.current?.instance.reset();
+        fileUploaderRef.current?.instance.reset();
     }
 
-    render() {
-        return (
-            <div className={"background"}>
-                <h2>АДМИНИСТРАТИВНО-ХОЗЯЙСТВЕННЫЕ ЗАЯВКИ</h2>
 
-                <div className={"container"}>
+    return (
+        <div className={"background"}>
+            <h2>АДМИНИСТРАТИВНО-ХОЗЯЙСТВЕННЫЕ ЗАЯВКИ</h2>
 
-                    <h3>Мои заявки в АХО</h3>
+            <div className={"container"}>
 
-                    <DataGrid dataSource={this.state.requests} keyExpr={"id"} showBorders={true}
-                              wordWrapEnabled={true} columnHidingEnabled={true} showRowLines={true}
-                              noDataText={"Нет заявок"}>
+                <h3>Мои заявки в АХО</h3>
 
-                        <Sorting mode={"single"} ascendingText={"По возростанию"} descendingText={"По убыванию"}
-                                 clearText={"Очистить"}/>
-                        <Paging pageSize={5}/>
+                <DataGrid dataSource={requests} keyExpr={"id"} showBorders={true}
+                          wordWrapEnabled={true} columnHidingEnabled={true} showRowLines={true}
+                          noDataText={"Нет заявок"}>
 
-                        <Column dataField={"CreationDate"} dataType={"date"} format={"dd.MM.yyyy HH:mm"} width={175}
-                                caption={"СОЗДАНА"} defaultSortOrder="desc"/>
+                    <Sorting mode={"single"} ascendingText={"По возростанию"} descendingText={"По убыванию"}
+                             clearText={"Очистить"}/>
+                    <Paging pageSize={5}/>
 
-                        <Column dataField={"Text"} width={750} caption={"ТЕКСТ"} hidingPriority={0}/>
+                    <Column dataField={"CreationDate"} dataType={"date"} format={"dd.MM.yyyy HH:mm"} width={175}
+                            caption={"СОЗДАНА"} defaultSortOrder="desc"/>
 
-                        <Column dataField={"Building"} width={175} caption={"ЗДАНИЕ"} hidingPriority={2}/>
+                    <Column dataField={"Text"} width={750} caption={"ТЕКСТ"} hidingPriority={0}/>
 
-                        <Column dataField={"Cabinet"} width={150} caption={"КАБИНЕТ"} hidingPriority={1}/>
+                    <Column dataField={"Building"} width={175} caption={"ЗДАНИЕ"} hidingPriority={2}/>
 
-                        <Column dataField={"Status"} caption={"СТАТУС"}/>
-                    </DataGrid>
+                    <Column dataField={"Cabinet"} width={150} caption={"КАБИНЕТ"} hidingPriority={1}/>
 
-                    <h3>Создать заявку</h3>
+                    <Column dataField={"Status"} caption={"СТАТУС"}/>
+                </DataGrid>
 
-                    <form onSubmit={this.handleSubmit} action={this.props.postUrlAAERequests}>
+                <h3>Создать заявку</h3>
 
-                        <div className={"row"}>
+                <form onSubmit={handleSubmit}>
 
-                            <label className={"label"}>Текст заявки*</label>
+                    <div className={"row"}>
 
-                            <textarea className={"input-text"} value={this.state.inputText} required={true}
-                                      placeholder={"Введите текст заявки"} onChange={e => {
-                                this.setState({inputText: e.target.value})
-                            }}/>
-                        </div>
+                        <label className={"label"}>Текст заявки*</label>
 
-                        <div className={"row"}>
+                        <textarea className={"input-text"} value={inputText} required={true}
+                                  placeholder={"Введите текст заявки"} onChange={e => {
+                            setInputText(e.target.value)
+                        }}/>
+                    </div>
 
-                            <label className={"label"}>Здание</label>
+                    <div className={"row"}>
 
-                            <DropDownBox dataSource={this.state.buildings} ref={this.state.dropDownBoxRefB}
-                                         showClearButton={true} placeholder={"Оставить пустым"}
-                                         value={this.state.selectedBuilding.Name}
-                                         onValueChanged={e => {
-                                             if (e.value === null)
-                                                 this.setState({
-                                                     selectedBuilding: {Id: "", Name: "", Rooms: []},
-                                                     selectedCabinet: {Id: "", Name: ""}
-                                                 })
-                                         }}>
+                        <label className={"label"}>Здание</label>
 
-                                <List dataSource={this.state.buildings} keyExpr={"Id"} displayExpr={"Name"}
-                                      onItemClick={e => {
-                                          this.setState({
-                                              selectedBuilding: e.itemData,
-                                              selectedCabinet: {Id: "", Name: ""}
-                                          });
-                                          this.state.dropDownBoxRefB.current?.instance.close();
-                                      }}/>
-                            </DropDownBox>
-                        </div>
+                        <DropDownBox dataSource={buildings} ref={dropDownBoxRefB}
+                                     showClearButton={true} placeholder={"Оставить пустым"}
+                                     value={selectedBuilding.Name}
+                                     onValueChanged={e => {
+                                         if (e.value === null) {
+                                             setSelectedBuilding({Id: "", Name: "", Rooms: []});
+                                             setSelectedCabinet({Id: "", Name: ""});
+                                         }
+                                     }}>
 
-                        <div className={"row"}>
+                            <List dataSource={buildings} keyExpr={"Id"} displayExpr={"Name"}
+                                  onItemClick={e => {
+                                      setSelectedBuilding(e.itemData)
+                                      dropDownBoxRefB.current?.instance.close();
+                                  }}/>
+                        </DropDownBox>
+                    </div>
 
-                            <label className={"label"}>Кабинет</label>
+                    <div className={"row"}>
 
-                            <DropDownBox dataSource={this.state.selectedBuilding.Rooms} ref={this.state.dropDownBoxRefC}
-                                         placeholder={"Оставить пустым"} showClearButton={true}
-                                         value={this.state.selectedCabinet.Name}
-                                         onValueChanged={e => {
-                                             if (e.value === null) this.setState({selectedCabinet: {Id: "", Name: ""}})
-                                         }}>
+                        <label className={"label"}>Кабинет</label>
 
-                                <List dataSource={this.state.selectedBuilding.Rooms} keyExpr={"Id"} displayExpr={"Name"}
-                                      noDataText={"Нет доступных кабинетов"}
-                                      onItemClick={e => {
-                                          this.setState({selectedCabinet: e.itemData});
-                                          this.state.dropDownBoxRefC.current?.instance.close();
-                                      }}/>
-                            </DropDownBox>
-                        </div>
+                        <DropDownBox dataSource={selectedBuilding.Rooms} ref={dropDownBoxRefC}
+                                     placeholder={"Оставить пустым"} showClearButton={true}
+                                     value={selectedCabinet.Name}
+                                     onValueChanged={e => {
+                                         if (e.value === null) setSelectedCabinet({Id: "", Name: ""})
+                                     }}>
 
-                        <div className={"row"}>
+                            <List dataSource={selectedBuilding.Rooms} keyExpr={"Id"} displayExpr={"Name"}
+                                  noDataText={"Нет доступных кабинетов"}
+                                  onItemClick={e => {
+                                      setSelectedCabinet(e.itemData);
+                                      dropDownBoxRefC.current?.instance.close();
+                                  }}/>
+                        </DropDownBox>
+                    </div>
 
-                            <label className={"label"}>Прикрепленный<br/>файл</label>
+                    <div className={"row"}>
 
-                            <FileUploader labelText={""} selectButtonText={"Обзор..."} ref={this.state.fileUploaderRef}
-                                          uploadMode={"useForm"} name={"file"} onValueChanged={e => {
-                                this.setState({file: e.value![0]})
-                            }} readyToUploadMessage={"Готово"}/>
-                        </div>
+                        <label className={"label"}>Прикрепленный<br/>файл</label>
 
-                        <input type="submit" className={"input-button"}/>
-                    </form>
-                    <Popup title={"Ваша заявка успешно создана…"}
-                           visible={this.state.dialogShow} width={"50%"} height={"30%"}
-                           showCloseButton={true} minHeight={75} minWidth={385}
-                           onHiding={() => this.setState({dialogShow: false})}
-                           closeOnOutsideClick={true}
-                           contentRender={() => <p className={"popup-content"}>Ваша заявка успешно создана и в скором
-                               времени будет рассмотрена диспетчером</p>}>
-                        <ToolbarItem
-                            toolbar="bottom"
-                            widget="dxButton"
-                            location="before"
-                            options={{text: "OK", onClick: () => this.setState({dialogShow: false})}}>
-                        </ToolbarItem>
-                    </Popup>
-                </div>
+                        <FileUploader labelText={""} selectButtonText={"Обзор..."} ref={fileUploaderRef}
+                                      uploadMode={"useForm"} name={"file"} onValueChanged={e => {
+                            setFile(e.value![0])
+                        }} readyToUploadMessage={"Готово"}/>
+                    </div>
+
+                    <input type="submit" className={"input-button"}/>
+                </form>
+                <Popup title={"Ваша заявка успешно создана…"}
+                       visible={dialogShow} width={"50%"} height={"30%"}
+                       showCloseButton={true} minHeight={75} minWidth={385}
+                       onHiding={() => setDialogShow(false)}
+                       closeOnOutsideClick={true}
+                       contentRender={() => <p className={"popup-content"}>Ваша заявка успешно создана и в скором
+                           времени будет рассмотрена диспетчером</p>}>
+                    <ToolbarItem
+                        toolbar="bottom"
+                        widget="dxButton"
+                        location="before"
+                        options={{text: "OK", onClick: () => setDialogShow(false)}}>
+                    </ToolbarItem>
+                </Popup>
             </div>
-
-        );
-    }
+        </div>
+    );
 }
+
+export default AAEList;

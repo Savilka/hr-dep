@@ -1,1 +1,127 @@
-{"requests":[{"CreationDate":"2021-07-16T02:12:42.877Z","Status":"В обработке","TypeID":"2","Note":"Тестовая заявка 1","ID":"1"},{"CreationDate":"2021-07-16T02:12:53.874Z","Status":"В обработке","TypeID":"1","Note":"Тестовая заявка 2","ID":"2"},{"CreationDate":"2021-07-16T02:13:06.187Z","Status":"В обработке","TypeID":"3","Note":"тестовая заявка 3","ID":"3"},{"CreationDate":"2021-07-19T02:34:18.070Z","Status":"В обработке","TypeID":"1","Note":"1","ID":"4"},{"CreationDate":"2021-07-19T02:35:20.714Z","Status":"В обработке","TypeID":"1","Note":"123","ID":"5"},{"CreationDate":"2021-07-20T05:56:34.917Z","Status":"В обработке","TypeID":"1","Note":"123","ID":"6"}],"types":[{"ID":"1","Name":"Справка 1"},{"ID":"2","Name":"Справка 2"},{"ID":"3","Name":"Справка 3"},{"ID":"4","Name":"Справка 4"}],"AAERequests":[{"CreationDate":"2021-07-21T02:24:15.444Z","Status":"Создана","Building":"Анатолия Гладкова 2а","Text":"Тестовая 1","Cabinet":"каб.108","HasFiles":false,"id":1},{"CreationDate":"2021-07-21T02:24:22.237Z","Status":"Создана","Building":"","Text":"Тестовая 2","Cabinet":"","HasFiles":false,"id":2},{"CreationDate":"2021-07-21T02:24:30.242Z","Status":"Создана","Building":"Горская 12","Text":"Тестовая 3","Cabinet":"","HasFiles":false,"id":3},{"CreationDate":"2021-07-21T02:24:37.566Z","Status":"Создана","Building":"Горская 12","Text":"Тестовая 4","Cabinet":"2 этаж","HasFiles":false,"id":4}],"buildings":[{"Id":"41e020b4-fa56-436d-9534-0ab5c4ec6a06","Name":"Анатолия Гладкова 2а","Rooms":[{"Id":"6c5b3873-9d2f-4f38-b04b-dc7a1d920dbe","Name":"Ресепшн 4-й этаж"},{"Id":"997a6816-8c02-46df-9c66-ed8cd9b5c741","Name":"каб.108"}]},{"Id":"41e020b4-fa56-436d-9534-0ab5c4ecdasdaa06","Name":"Горская 12","Rooms":[{"Id":"6c5b2343873-9d2f-4f38-b04b-dc7a1d920dbe","Name":"1 этаж"},{"Id":"997a681234236-8c02-46df-9c66-ed8cd9b5c741","Name":"2 этаж"}]}]}
+{
+  "requests": [
+    {
+      "CreationDate": "2021-07-21T10:16:08.070Z",
+      "Status": "В обработке",
+      "TypeID": "1",
+      "Note": "Тестовая 1",
+      "ID": "1"
+    },
+    {
+      "CreationDate": "2021-07-21T10:16:14.023Z",
+      "Status": "В обработке",
+      "TypeID": "2",
+      "Note": "Тестовая 2",
+      "ID": "2"
+    },
+    {
+      "CreationDate": "2021-07-21T10:16:20.254Z",
+      "Status": "В обработке",
+      "TypeID": "3",
+      "Note": "Тестовая 3",
+      "ID": "3"
+    },
+    {
+      "CreationDate": "2021-07-21T10:16:26.313Z",
+      "Status": "В обработке",
+      "TypeID": "4",
+      "Note": "Тестовая 4",
+      "ID": "4"
+    }
+  ],
+  "types": [
+    {
+      "ID": "1",
+      "Name": "Справка 1"
+    },
+    {
+      "ID": "2",
+      "Name": "Справка 2"
+    },
+    {
+      "ID": "3",
+      "Name": "Справка 3"
+    },
+    {
+      "ID": "4",
+      "Name": "Справка 4"
+    }
+  ],
+  "AAERequests": [
+    {
+      "CreationDate": "2021-07-21T02:24:15.444Z",
+      "Status": "Создана",
+      "Building": "Анатолия Гладкова 2а",
+      "Text": "Тестовая 1",
+      "Cabinet": "каб.108",
+      "HasFiles": false,
+      "id": 1
+    },
+    {
+      "CreationDate": "2021-07-21T02:24:22.237Z",
+      "Status": "Создана",
+      "Building": "",
+      "Text": "Тестовая 2",
+      "Cabinet": "",
+      "HasFiles": false,
+      "id": 2
+    },
+    {
+      "CreationDate": "2021-07-21T02:24:30.242Z",
+      "Status": "Создана",
+      "Building": "Горская 12",
+      "Text": "Тестовая 3",
+      "Cabinet": "",
+      "HasFiles": false,
+      "id": 3
+    },
+    {
+      "CreationDate": "2021-07-21T02:24:37.566Z",
+      "Status": "Создана",
+      "Building": "Горская 12",
+      "Text": "Тестовая 4",
+      "Cabinet": "2 этаж",
+      "HasFiles": false,
+      "id": 4
+    },
+    {
+      "CreationDate": "2021-07-21T10:46:10.651Z",
+      "Status": "Создана",
+      "Building": "Горская 12",
+      "Text": "Тестовая 5",
+      "Cabinet": "1 этаж",
+      "HasFiles": true,
+      "id": 5
+    }
+  ],
+  "buildings": [
+    {
+      "Id": "41e020b4-fa56-436d-9534-0ab5c4ec6a06",
+      "Name": "Анатолия Гладкова 2а",
+      "Rooms": [
+        {
+          "Id": "6c5b3873-9d2f-4f38-b04b-dc7a1d920dbe",
+          "Name": "Ресепшн 4-й этаж"
+        },
+        {
+          "Id": "997a6816-8c02-46df-9c66-ed8cd9b5c741",
+          "Name": "каб.108"
+        }
+      ]
+    },
+    {
+      "Id": "41e020b4-fa56-436d-9534-0ab5c4ecdasdaa06",
+      "Name": "Горская 12",
+      "Rooms": [
+        {
+          "Id": "6c5b2343873-9d2f-4f38-b04b-dc7a1d920dbe",
+          "Name": "1 этаж"
+        },
+        {
+          "Id": "997a681234236-8c02-46df-9c66-ed8cd9b5c741",
+          "Name": "2 этаж"
+        }
+      ]
+    }
+  ]
+}

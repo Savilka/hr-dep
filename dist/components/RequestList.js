@@ -1,18 +1,3 @@
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -55,106 +40,101 @@ import Popup, { ToolbarItem } from "devextreme-react/popup";
 import DropDownBox from "devextreme-react/drop-down-box";
 import List from "devextreme-react/list";
 import "../style/style-RequestList.css";
+import { useEffect, useRef, useState } from "react";
 //Класс, реализующий контрол «Заявки в отдел кадров»
-var RequestList = /** @class */ (function (_super) {
-    __extends(RequestList, _super);
-    function RequestList(props) {
-        var _this = _super.call(this, props) || this;
-        _this.state = {
-            requests: [],
-            types: [],
-            selectedType: "",
-            note: "",
-            isSent: false,
-            dialogShow: false,
-            dropDownBoxRef: React.createRef()
-        };
-        //Привязка методов к контексту
-        _this.calculateCellValue = _this.calculateCellValue.bind(_this);
-        _this.calculateDropDownBoxValue = _this.calculateDropDownBoxValue.bind(_this);
-        _this.handleSubmit = _this.handleSubmit.bind(_this);
-        return _this;
-    }
-    //Метод, делающий GET запрос на сервер для получения списка заявок
-    RequestList.prototype.fetchRequests = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var response, data, error_1;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, fetch(this.props.getUrlRequests)];
-                    case 1:
-                        response = _a.sent();
-                        return [4 /*yield*/, response.json()];
-                    case 2:
-                        data = _a.sent();
-                        this.setState({ requests: data.requests });
-                        return [3 /*break*/, 4];
-                    case 3:
-                        error_1 = _a.sent();
-                        console.log(error_1);
-                        return [3 /*break*/, 4];
-                    case 4: return [2 /*return*/];
-                }
+var RequestList = function (_a) {
+    var getUrlRequests = _a.getUrlRequests, getUrlTypes = _a.getUrlTypes, postUrlRequests = _a.postUrlRequests;
+    // requests - список заявок, принимающийся с сервера
+    var _b = useState([]), requests = _b[0], setRequests = _b[1];
+    // types - типы заявок, принимающихся с сервера
+    var _c = useState([]), types = _c[0], setTypes = _c[1];
+    // selectedType - тип заявки, выбранный в dropDownBox'е
+    var _d = useState(""), selectedType = _d[0], setSelectedType = _d[1];
+    // note - текст заметки
+    var _e = useState(""), note = _e[0], setNote = _e[1];
+    // isSent - флаг, показывающий успешно ли отправлена заявка
+    var _f = useState(true), isSent = _f[0], setIsSent = _f[1];
+    // dialogShow - флаг, отвечащий за открытие диалогового окна
+    var _g = useState(false), dialogShow = _g[0], setDialogShow = _g[1];
+    // dropDownBoxRef - ссылка на объект DropDownBox
+    var dropDownBoxRef = useRef(null);
+    useEffect(function () {
+        // Функция, делающая GET запрос на сервер для получения списка типов заявок
+        function fetchTypes() {
+            return __awaiter(this, void 0, void 0, function () {
+                var response, data, error_1;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            _a.trys.push([0, 3, , 4]);
+                            return [4 /*yield*/, fetch(getUrlTypes)];
+                        case 1:
+                            response = _a.sent();
+                            return [4 /*yield*/, response.json()];
+                        case 2:
+                            data = _a.sent();
+                            setTypes(data.types);
+                            setSelectedType(data.types[0].ID);
+                            return [3 /*break*/, 4];
+                        case 3:
+                            error_1 = _a.sent();
+                            console.log(error_1);
+                            return [3 /*break*/, 4];
+                        case 4: return [2 /*return*/];
+                    }
+                });
             });
-        });
-    };
-    //Метод, делающий GET запрос на сервер для получения списка типов заявок
-    RequestList.prototype.fetchTypes = function () {
-        return __awaiter(this, void 0, void 0, function () {
-            var response, data, error_2;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        _a.trys.push([0, 3, , 4]);
-                        return [4 /*yield*/, fetch(this.props.getUrlTypes)];
-                    case 1:
-                        response = _a.sent();
-                        return [4 /*yield*/, response.json()];
-                    case 2:
-                        data = _a.sent();
-                        this.setState({ types: data.types, selectedType: data.types[0].ID });
-                        return [3 /*break*/, 4];
-                    case 3:
-                        error_2 = _a.sent();
-                        console.log(error_2);
-                        return [3 /*break*/, 4];
-                    case 4: return [2 /*return*/];
-                }
-            });
-        });
-    };
-    //При монтировании компонента делаются два запроса для построенния dataGrid
-    RequestList.prototype.componentDidMount = function () {
-        this.fetchRequests();
-        this.fetchTypes();
-    };
-    //Обновляет компонент, если заявка успешно отправлена. Делается повторный запрос на список всех заявок
-    RequestList.prototype.componentDidUpdate = function () {
-        if (this.state.isSent) {
-            this.fetchRequests();
-            this.setState({ isSent: false });
         }
-    };
+        fetchTypes();
+    }, [getUrlTypes]);
+    useEffect(function () {
+        // Функция, делающая GET запрос на сервер для получения списка заявок
+        function fetchRequests() {
+            return __awaiter(this, void 0, void 0, function () {
+                var response, data, error_2;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            _a.trys.push([0, 3, , 4]);
+                            return [4 /*yield*/, fetch(getUrlRequests)];
+                        case 1:
+                            response = _a.sent();
+                            return [4 /*yield*/, response.json()];
+                        case 2:
+                            data = _a.sent();
+                            setRequests(data.requests);
+                            return [3 /*break*/, 4];
+                        case 3:
+                            error_2 = _a.sent();
+                            console.log(error_2);
+                            return [3 /*break*/, 4];
+                        case 4: return [2 /*return*/];
+                    }
+                });
+            });
+        }
+        if (isSent)
+            fetchRequests();
+        setIsSent(false);
+    }, [isSent, getUrlRequests]);
     /*Метод, возвращающий название заявки по её id, для dataGrid
       Также просходит проверка на undefined, чтобы метод find не выбросил исключение*/
-    RequestList.prototype.calculateCellValue = function (id) {
+    function calculateCellValue(id) {
         var _a, _b;
-        return typeof ((_a = this.state.types.find(function (type) { return type.ID === id.TypeID; })) === null || _a === void 0 ? void 0 : _a.Name) === 'undefined' ? ""
-            : (_b = this.state.types.find(function (type) { return type.ID === id.TypeID; })) === null || _b === void 0 ? void 0 : _b.Name;
-    };
+        return typeof ((_a = types.find(function (type) { return type.ID === id.TypeID; })) === null || _a === void 0 ? void 0 : _a.Name) === 'undefined' ? ""
+            : (_b = types.find(function (type) { return type.ID === id.TypeID; })) === null || _b === void 0 ? void 0 : _b.Name;
+    }
     /*Метод, возвращающий название заявки по её id, для dropDownBox
     * Также просходит проверка на undefined, чтобы метод find не выбросил исключение */
-    RequestList.prototype.calculateDropDownBoxValue = function (id) {
+    function calculateDropDownBoxValue(id) {
         var _a, _b;
-        return typeof ((_a = this.state.types.find(function (type) { return type.ID === id; })) === null || _a === void 0 ? void 0 : _a.Name) === 'undefined' ? ""
-            : (_b = this.state.types.find(function (type) { return type.ID === id; })) === null || _b === void 0 ? void 0 : _b.Name;
-    };
+        return typeof ((_a = types.find(function (type) { return type.ID === id; })) === null || _a === void 0 ? void 0 : _a.Name) === 'undefined' ? ""
+            : (_b = types.find(function (type) { return type.ID === id; })) === null || _b === void 0 ? void 0 : _b.Name;
+    }
     /*Отслеживание клика на кнопку отправить
     * Происходить POST запрос к серверу и отправка JSON строки
     * Если запрос успешно отправлен, то произойдет обновление таблицы и появится диалоговое окно*/
-    RequestList.prototype.handleSubmit = function (e) {
+    function handleSubmit(e) {
         return __awaiter(this, void 0, void 0, function () {
             var requestOptions;
             var _this = this;
@@ -166,11 +146,11 @@ var RequestList = /** @class */ (function (_super) {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                        TypeID: this.state.selectedType,
-                        Note: this.state.note,
+                        TypeID: selectedType,
+                        Note: note,
                     })
                 };
-                fetch(this.props.postUrlRequests, requestOptions)
+                fetch(postUrlRequests, requestOptions)
                     .then(function (response) { return __awaiter(_this, void 0, void 0, function () {
                     var isJson, data, _a, error;
                     var _b;
@@ -191,8 +171,8 @@ var RequestList = /** @class */ (function (_super) {
                                     return [2 /*return*/, Promise.reject(error)];
                                 }
                                 else {
-                                    this.setState({ isSent: true });
-                                    this.setState({ dialogShow: true });
+                                    setIsSent(true);
+                                    setDialogShow(true);
                                 }
                                 return [2 /*return*/];
                         }
@@ -202,39 +182,35 @@ var RequestList = /** @class */ (function (_super) {
                     alert("Ошибка: " + error);
                     console.log(error);
                 });
-                this.setState({ note: "" });
+                setNote("");
                 return [2 /*return*/];
             });
         });
-    };
-    RequestList.prototype.render = function () {
-        var _this = this;
-        return (React.createElement("div", { className: "container" },
-            React.createElement("h3", { className: "title" }, "\u041C\u041E\u0418 \u0417\u0410\u042F\u0412\u041A\u0418 \u0412 \u041E\u0422\u0414\u0415\u041B \u041A\u0410\u0414\u0420\u041E\u0412"),
-            React.createElement(DataGrid, { noDataText: "Нет заявок", dataSource: this.state.requests, keyExpr: "ID", showBorders: true, columnHidingEnabled: true },
-                React.createElement(Sorting, { mode: "single", ascendingText: "По возростанию", descendingText: "По убыванию", clearText: "Очистить" }),
-                React.createElement(Paging, { pageSize: 5 }),
-                React.createElement(Column, { dataField: "CreationDate", dataType: "date", format: "dd.MM.yyyy HH:mm", caption: "СОЗДАНА", width: 175, hidingPriority: 3, defaultSortOrder: "desc" }),
-                React.createElement(Column, { dataField: "TypeID", calculateCellValue: this.calculateCellValue, caption: "ТИП ЗАЯВКИ", width: 550, hidingPriority: 1 }),
-                React.createElement(Column, { dataField: "Note", caption: "ПРИМЕЧАНИЕ", hidingPriority: 0, width: 550 }),
-                React.createElement(Column, { dataField: "Status", caption: "СТАТУС", hidingPriority: 2 })),
-            React.createElement("h3", { className: "title" }, "\u0421\u041E\u0417\u0414\u0410\u0422\u042C \u0417\u0410\u042F\u0412\u041A\u0423"),
-            React.createElement("h4", { className: "mini-title" }, "\u0422\u0438\u043F \u0437\u0430\u044F\u0432\u043A\u0438"),
-            React.createElement("form", { onSubmit: this.handleSubmit },
-                React.createElement(DropDownBox, { dataSource: this.state.types, placeholder: "Выберите тип заявки", ref: this.state.dropDownBoxRef, value: this.calculateDropDownBoxValue(this.state.selectedType) },
-                    React.createElement(List, { dataSource: this.state.types, keyExpr: "ID", displayExpr: "Name", onItemClick: function (e) {
-                            var _a;
-                            _this.setState({ selectedType: e.itemData.ID });
-                            (_a = _this.state.dropDownBoxRef.current) === null || _a === void 0 ? void 0 : _a.instance.close();
-                        } })),
-                React.createElement("h4", { className: "mini-title" }, "\u041F\u0440\u0438\u043C\u0435\u0447\u0430\u043D\u0438\u0435"),
-                React.createElement("textarea", { className: "input-text", value: this.state.note, onChange: function (e) { return _this.setState({ note: e.target.value }); }, placeholder: "Введите комментарий, если требуется" }),
-                React.createElement("br", null),
-                React.createElement("input", { type: "submit", value: "ОТПРАВИТЬ", className: "input-button" })),
-            React.createElement(Popup, { title: "Ваша заявка успешно создана…", visible: this.state.dialogShow, width: "50%", height: "30%", showCloseButton: true, minHeight: 75, minWidth: 385, onHiding: function () { return _this.setState({ dialogShow: false }); }, closeOnOutsideClick: true, contentRender: function () { return React.createElement("p", { className: "popup-content" }, "\u0412\u0430\u0448\u0430 \u0437\u0430\u044F\u0432\u043A\u0430 \u0443\u0441\u043F\u0435\u0448\u043D\u043E \u0441\u043E\u0437\u0434\u0430\u043D\u0430 \u0438 \u0432 \u0441\u043A\u043E\u0440\u043E\u043C \u0432\u0440\u0435\u043C\u0435\u043D\u0438 \u0431\u0443\u0434\u0435\u0442 \u0440\u0430\u0441\u0441\u043C\u043E\u0442\u0440\u0435\u043D\u0430 \u0434\u0438\u0441\u043F\u0435\u0442\u0447\u0435\u0440\u043E\u043C"); } },
-                React.createElement(ToolbarItem, { toolbar: "bottom", widget: "dxButton", location: "before", options: { text: "OK", onClick: function () { return _this.setState({ dialogShow: false }); } } }))));
-    };
-    return RequestList;
-}(React.Component));
+    }
+    return (React.createElement("div", { className: "container" },
+        React.createElement("h3", { className: "title" }, "\u041C\u041E\u0418 \u0417\u0410\u042F\u0412\u041A\u0418 \u0412 \u041E\u0422\u0414\u0415\u041B \u041A\u0410\u0414\u0420\u041E\u0412"),
+        React.createElement(DataGrid, { noDataText: "Нет заявок", dataSource: requests, keyExpr: "ID", showBorders: true, columnHidingEnabled: true },
+            React.createElement(Sorting, { mode: "single", ascendingText: "По возростанию", descendingText: "По убыванию", clearText: "Очистить" }),
+            React.createElement(Paging, { pageSize: 5 }),
+            React.createElement(Column, { dataField: "CreationDate", dataType: "date", format: "dd.MM.yyyy HH:mm", caption: "СОЗДАНА", width: 175, hidingPriority: 3, defaultSortOrder: "desc" }),
+            React.createElement(Column, { dataField: "TypeID", calculateCellValue: calculateCellValue, caption: "ТИП ЗАЯВКИ", width: 550, hidingPriority: 1 }),
+            React.createElement(Column, { dataField: "Note", caption: "ПРИМЕЧАНИЕ", hidingPriority: 0, width: 550 }),
+            React.createElement(Column, { dataField: "Status", caption: "СТАТУС", hidingPriority: 2 })),
+        React.createElement("h3", { className: "title" }, "\u0421\u041E\u0417\u0414\u0410\u0422\u042C \u0417\u0410\u042F\u0412\u041A\u0423"),
+        React.createElement("h4", { className: "mini-title" }, "\u0422\u0438\u043F \u0437\u0430\u044F\u0432\u043A\u0438"),
+        React.createElement("form", { onSubmit: handleSubmit },
+            React.createElement(DropDownBox, { dataSource: types, placeholder: "Выберите тип заявки", ref: dropDownBoxRef, value: calculateDropDownBoxValue(selectedType) },
+                React.createElement(List, { dataSource: types, keyExpr: "ID", displayExpr: "Name", onItemClick: function (e) {
+                        var _a;
+                        setSelectedType(e.itemData.ID);
+                        (_a = dropDownBoxRef.current) === null || _a === void 0 ? void 0 : _a.instance.close();
+                    } })),
+            React.createElement("h4", { className: "mini-title" }, "\u041F\u0440\u0438\u043C\u0435\u0447\u0430\u043D\u0438\u0435"),
+            React.createElement("textarea", { className: "input-text", value: note, onChange: function (e) { return setNote(e.target.value); }, placeholder: "Введите комментарий, если требуется" }),
+            React.createElement("br", null),
+            React.createElement("input", { type: "submit", value: "ОТПРАВИТЬ", className: "input-button" })),
+        React.createElement(Popup, { title: "Ваша заявка успешно создана…", visible: dialogShow, width: "50%", height: "30%", showCloseButton: true, minHeight: 75, minWidth: 385, onHiding: function () { return setDialogShow(false); }, closeOnOutsideClick: true, contentRender: function () { return React.createElement("p", { className: "popup-content" }, "\u0412\u0430\u0448\u0430 \u0437\u0430\u044F\u0432\u043A\u0430 \u0443\u0441\u043F\u0435\u0448\u043D\u043E \u0441\u043E\u0437\u0434\u0430\u043D\u0430 \u0438 \u0432 \u0441\u043A\u043E\u0440\u043E\u043C \u0432\u0440\u0435\u043C\u0435\u043D\u0438 \u0431\u0443\u0434\u0435\u0442 \u0440\u0430\u0441\u0441\u043C\u043E\u0442\u0440\u0435\u043D\u0430 \u0434\u0438\u0441\u043F\u0435\u0442\u0447\u0435\u0440\u043E\u043C"); } },
+            React.createElement(ToolbarItem, { toolbar: "bottom", widget: "dxButton", location: "before", options: { text: "OK", onClick: function () { return setDialogShow(false); } } }))));
+};
 export default RequestList;
 //# sourceMappingURL=RequestList.js.map

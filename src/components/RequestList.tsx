@@ -5,114 +5,89 @@ import DropDownBox from "devextreme-react/drop-down-box";
 import List from "devextreme-react/list"
 import {IRequest, IType} from "../Types"
 import "../style/style-RequestList.css"
-
-// Интерфейс, реализующий состояние компонента RequestList
-interface IRequestListState {
-    // requests - список заявок, принмающийся с сервера
-    requests: IRequest[]
-
-    // types - типы заявок, принмающихся с сервера
-    types: IType[]
-
-    // selectedType - тип заявки, выбранный в dropDownBox'е
-    selectedType: string;
-
-    // note - текст заметки
-    note: string;
-
-    // isSent - флаг, показывающий успешно ли отправлена заявка
-    isSent: boolean;
-
-    // dialogShow - флаг, отвечащий за открытие диалогового окна
-    dialogShow: boolean;
-
-    // dropDownBoxRef - ссылка на DropDownBox объект
-    dropDownBoxRef: React.RefObject<DropDownBox>;
-}
+import {useEffect, useRef, useState} from "react";
 
 //Ссылки для fetch запросов
-interface IRequestListProps {
+interface API {
     getUrlRequests: string;
     getUrlTypes: string;
     postUrlRequests: string;
 }
 
 //Класс, реализующий контрол «Заявки в отдел кадров»
-export default class RequestList extends React.Component<IRequestListProps, IRequestListState> {
+const RequestList: React.FC<API> = ({getUrlRequests, getUrlTypes, postUrlRequests}) => {
 
-    constructor(props: IRequestListProps) {
-        super(props);
+    // requests - список заявок, принимающийся с сервера
+    const [requests, setRequests] = useState<IRequest[]>([]);
 
-        this.state = {
-            requests: [],
-            types: [],
-            selectedType: "",
-            note: "",
-            isSent: false,
-            dialogShow: false,
-            dropDownBoxRef: React.createRef()
-        };
+    // types - типы заявок, принимающихся с сервера
+    const [types, setTypes] = useState<IType[]>([]);
 
-        //Привязка методов к контексту
-        this.calculateCellValue = this.calculateCellValue.bind(this);
-        this.calculateDropDownBoxValue = this.calculateDropDownBoxValue.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-    }
+    // selectedType - тип заявки, выбранный в dropDownBox'е
+    const [selectedType, setSelectedType] = useState("");
 
-    //Метод, делающий GET запрос на сервер для получения списка заявок
-    async fetchRequests() {
-        try {
-            const response = await fetch(this.props.getUrlRequests);
-            const data = await response.json();
-            this.setState({requests: data.requests});
-        } catch (error) {
-            console.log(error);
+    // note - текст заметки
+    const [note, setNote] = useState("");
+
+    // isSent - флаг, показывающий успешно ли отправлена заявка
+    const [isSent, setIsSent] = useState(true);
+
+    // dialogShow - флаг, отвечащий за открытие диалогового окна
+    const [dialogShow, setDialogShow] = useState(false);
+
+    // dropDownBoxRef - ссылка на объект DropDownBox
+    const dropDownBoxRef = useRef<DropDownBox>(null)
+
+    useEffect(() => {
+        // Функция, делающая GET запрос на сервер для получения списка типов заявок
+        async function fetchTypes() {
+            try {
+                const response = await fetch(getUrlTypes);
+                const data = await response.json();
+                setTypes(data.types);
+                setSelectedType(data.types[0].ID);
+            } catch (error) {
+                console.log(error);
+            }
         }
-    }
 
-    //Метод, делающий GET запрос на сервер для получения списка типов заявок
-    async fetchTypes() {
-        try {
-            const response = await fetch(this.props.getUrlTypes);
-            const data = await response.json();
-            this.setState({types: data.types, selectedType: data.types[0].ID});
-        } catch (error) {
-            console.log(error);
+        fetchTypes();
+    }, [getUrlTypes]);
+
+    useEffect(() => {
+        // Функция, делающая GET запрос на сервер для получения списка заявок
+        async function fetchRequests() {
+            try {
+                const response = await fetch(getUrlRequests);
+                const data = await response.json();
+                setRequests(data.requests);
+            } catch (error) {
+                console.log(error);
+            }
         }
-    }
+        if (isSent) fetchRequests();
+        setIsSent(false);
+    }, [isSent, getUrlRequests]);
 
-    //При монтировании компонента делаются два запроса для построенния dataGrid
-    componentDidMount() {
-        this.fetchRequests()
-        this.fetchTypes()
-    }
-
-    //Обновляет компонент, если заявка успешно отправлена. Делается повторный запрос на список всех заявок
-    componentDidUpdate() {
-        if (this.state.isSent) {
-            this.fetchRequests();
-            this.setState({isSent: false});
-        }
-    }
 
     /*Метод, возвращающий название заявки по её id, для dataGrid
       Также просходит проверка на undefined, чтобы метод find не выбросил исключение*/
-    calculateCellValue(id: IRequest) {
-        return typeof (this.state.types.find(type => type.ID === id.TypeID)?.Name) === 'undefined' ? ""
-            : this.state.types.find(type => type.ID === id.TypeID)?.Name;
+    function calculateCellValue(id: IRequest) {
+        return typeof (types.find(type => type.ID === id.TypeID)?.Name) === 'undefined' ? ""
+            : types.find(type => type.ID === id.TypeID)?.Name;
     }
 
     /*Метод, возвращающий название заявки по её id, для dropDownBox
     * Также просходит проверка на undefined, чтобы метод find не выбросил исключение */
-    calculateDropDownBoxValue(id: string) {
-        return typeof (this.state.types.find(type => type.ID === id)?.Name) === 'undefined' ? ""
-            : this.state.types.find(type => type.ID === id)?.Name;
+    function calculateDropDownBoxValue(id: string) {
+        return typeof (types.find(type => type.ID === id)?.Name) === 'undefined' ? ""
+            : types.find(type => type.ID === id)?.Name;
     }
 
     /*Отслеживание клика на кнопку отправить
     * Происходить POST запрос к серверу и отправка JSON строки
     * Если запрос успешно отправлен, то произойдет обновление таблицы и появится диалоговое окно*/
-    async handleSubmit(e: React.FormEvent) {
+    async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
 
         const requestOptions = {
@@ -121,12 +96,12 @@ export default class RequestList extends React.Component<IRequestListProps, IReq
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                TypeID: this.state.selectedType,
-                Note: this.state.note,
+                TypeID: selectedType,
+                Note: note,
             })
         };
 
-        fetch(this.props.postUrlRequests, requestOptions)
+        fetch(postUrlRequests, requestOptions)
             .then(async response => {
                 const isJson = response.headers.get('content-type')?.includes('application/json');
                 const data = isJson && await response.json();
@@ -134,8 +109,8 @@ export default class RequestList extends React.Component<IRequestListProps, IReq
                     const error = (data && data.message) || response.status;
                     return Promise.reject(error);
                 } else {
-                    this.setState({isSent: true});
-                    this.setState({dialogShow: true});
+                    setIsSent(true);
+                    setDialogShow(true);
                 }
             })
             .catch(error => {
@@ -143,76 +118,78 @@ export default class RequestList extends React.Component<IRequestListProps, IReq
                 console.log(error);
             })
 
-        this.setState({note: ""});
+        setNote("");
     }
 
-    render() {
-        return (
-            <div className={"container"}>
-                <h3 className={"title"}>МОИ ЗАЯВКИ В ОТДЕЛ КАДРОВ</h3>
 
-                <DataGrid noDataText={"Нет заявок"} dataSource={this.state.requests}
-                          keyExpr="ID" showBorders={true} columnHidingEnabled={true}>
-                    <Sorting mode={"single"} ascendingText={"По возростанию"} descendingText={"По убыванию"}
-                             clearText={"Очистить"}/>
+    return (
+        <div className={"container"}>
+            <h3 className={"title"}>МОИ ЗАЯВКИ В ОТДЕЛ КАДРОВ</h3>
 
-                    <Paging pageSize={5}/>
+            <DataGrid noDataText={"Нет заявок"} dataSource={requests}
+                      keyExpr="ID" showBorders={true} columnHidingEnabled={true}>
+                <Sorting mode={"single"} ascendingText={"По возростанию"} descendingText={"По убыванию"}
+                         clearText={"Очистить"}/>
 
-                    <Column
-                        dataField={"CreationDate"} dataType={"date"} format={"dd.MM.yyyy HH:mm"} caption={"СОЗДАНА"}
-                        width={175} hidingPriority={3} defaultSortOrder="desc"/>
+                <Paging pageSize={5}/>
 
-                    <Column dataField={"TypeID"} calculateCellValue={this.calculateCellValue}
-                            caption={"ТИП ЗАЯВКИ"} width={550} hidingPriority={1}/>
+                <Column
+                    dataField={"CreationDate"} dataType={"date"} format={"dd.MM.yyyy HH:mm"} caption={"СОЗДАНА"}
+                    width={175} hidingPriority={3} defaultSortOrder="desc"/>
 
-                    <Column dataField={"Note"} caption={"ПРИМЕЧАНИЕ"} hidingPriority={0} width={550}/>
+                <Column dataField={"TypeID"} calculateCellValue={calculateCellValue}
+                        caption={"ТИП ЗАЯВКИ"} width={550} hidingPriority={1}/>
 
-                    <Column dataField={"Status"} caption={"СТАТУС"} hidingPriority={2}/>
-                </DataGrid>
+                <Column dataField={"Note"} caption={"ПРИМЕЧАНИЕ"} hidingPriority={0} width={550}/>
 
-                <h3 className={"title"}>СОЗДАТЬ ЗАЯВКУ</h3>
-                <h4 className={"mini-title"}>Тип заявки</h4>
+                <Column dataField={"Status"} caption={"СТАТУС"} hidingPriority={2}/>
+            </DataGrid>
 
-                <form onSubmit={this.handleSubmit}>
+            <h3 className={"title"}>СОЗДАТЬ ЗАЯВКУ</h3>
+            <h4 className={"mini-title"}>Тип заявки</h4>
 
-                    <DropDownBox dataSource={this.state.types} placeholder={"Выберите тип заявки"}
-                                 ref={this.state.dropDownBoxRef}
-                                 value={this.calculateDropDownBoxValue(this.state.selectedType)}>
+            <form onSubmit={handleSubmit}>
 
-                        <List dataSource={this.state.types} keyExpr={"ID"} displayExpr={"Name"} onItemClick={(e) => {
-                            this.setState({selectedType: e.itemData.ID});
-                            this.state.dropDownBoxRef.current?.instance.close()
-                        }}/>
-                    </DropDownBox>
+                <DropDownBox dataSource={types} placeholder={"Выберите тип заявки"}
+                             ref={dropDownBoxRef}
+                             value={calculateDropDownBoxValue(selectedType)}>
 
-                    <h4 className={"mini-title"}>Примечание</h4>
+                    <List dataSource={types} keyExpr={"ID"} displayExpr={"Name"} onItemClick={(e) => {
+                        setSelectedType(e.itemData.ID);
+                        dropDownBoxRef.current?.instance.close();
+                    }}/>
+                </DropDownBox>
 
-                    <textarea className={"input-text"} value={this.state.note}
-                              onChange={e => this.setState({note: e.target.value})}
-                              placeholder={"Введите комментарий, если требуется"}/><br/>
+                <h4 className={"mini-title"}>Примечание</h4>
 
-                    <input type={"submit"} value={"ОТПРАВИТЬ"} className={"input-button"}/>
-                </form>
+                <textarea className={"input-text"} value={note}
+                          onChange={e => setNote(e.target.value)}
+                          placeholder={"Введите комментарий, если требуется"}/><br/>
 
-                <Popup title={"Ваша заявка успешно создана…"}
-                       visible={this.state.dialogShow} width={"50%"} height={"30%"}
-                       showCloseButton={true} minHeight={75} minWidth={385}
-                       onHiding={() => this.setState({dialogShow: false})}
-                       closeOnOutsideClick={true}
-                       contentRender={() => <p className={"popup-content"}>Ваша заявка успешно создана и в скором
-                           времени будет рассмотрена диспетчером</p>}>
+                <input type={"submit"} value={"ОТПРАВИТЬ"} className={"input-button"}/>
+            </form>
 
-                    <ToolbarItem
-                        toolbar="bottom"
-                        widget="dxButton"
-                        location="before"
-                        options={{text: "OK", onClick: () => this.setState({dialogShow: false})}}>
-                    </ToolbarItem>
-                </Popup>
-            </div>
-        );
-    }
+            <Popup title={"Ваша заявка успешно создана…"}
+                   visible={dialogShow} width={"50%"} height={"30%"}
+                   showCloseButton={true} minHeight={75} minWidth={385}
+                   onHiding={() => setDialogShow(false)}
+                   closeOnOutsideClick={true}
+                   contentRender={() => <p className={"popup-content"}>Ваша заявка успешно создана и в скором
+                       времени будет рассмотрена диспетчером</p>}>
+
+                <ToolbarItem
+                    toolbar="bottom"
+                    widget="dxButton"
+                    location="before"
+                    options={{text: "OK", onClick: () => setDialogShow(false)}}>
+                </ToolbarItem>
+            </Popup>
+        </div>
+    );
 }
+
+
+export default RequestList;
 
 
 

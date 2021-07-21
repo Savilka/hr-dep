@@ -1,7 +1,8 @@
-import * as  React from "react";
 import AAEList from "./components/AAEList";
 import RequestList from "./components/RequestList";
 import * as ReactDOM from "react-dom";
+import React from "react";
+
 
 //Ссылки для отпраки запросов на сервер для RequestList компонента
 const getUrlRequests: string = "http://localhost:3000/requests";
@@ -15,7 +16,7 @@ const postUrlAAERequests: string = "http://localhost:3000/AAERequests";
 
 
 
-// ReactDOM.render(<RequestList getUrlRequests={getUrlRequests} getUrlTypes={getUrlTypes} postUrlRequests={postUrlRequests}/>,
+// ReactDOM.render(<RequestList getUrlRequests={getUrlRequests} getUrlTypes={getUrlTypes} postUrlRequests={postUrlRequests} />,
 //     document.getElementById("app"));
 ReactDOM.render(<AAEList getUrlAAERequests={getUrlAAERequests} getUrlBuildings={getUrlBuildings} postUrlAAERequests={postUrlAAERequests}/>,
     document.getElementById("app"));
