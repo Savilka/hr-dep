@@ -16,9 +16,9 @@ const postUrlAAERequests: string = "http://localhost:3000/AAERequests";
 
 
 
-// ReactDOM.render(<RequestList getUrlRequests={getUrlRequests} getUrlTypes={getUrlTypes} postUrlRequests={postUrlRequests} />,
-//     document.getElementById("app"));
-ReactDOM.render(<AAEList getUrlAAERequests={getUrlAAERequests} getUrlBuildings={getUrlBuildings} postUrlAAERequests={postUrlAAERequests}/>,
-    document.getElementById("app"));
+ ReactDOM.render(<RequestList getUrlRequests={getUrlRequests} getUrlTypes={getUrlTypes} postUrlRequests={postUrlRequests} />,
+     document.getElementById("app"));
+//ReactDOM.render(<AAEList getUrlAAERequests={getUrlAAERequests} getUrlBuildings={getUrlBuildings} postUrlAAERequests={postUrlAAERequests}/>,
+ //   document.getElementById("app"));
 
 

@@ -41,12 +41,12 @@ import DropDownBox from "devextreme-react/drop-down-box";
 import List from "devextreme-react/list";
 import "../style/style-RequestList.css";
 import { useEffect, useRef, useState } from "react";
-//Класс, реализующий контрол «Заявки в отдел кадров»
+//Функциональная компонента, реализующая контрол «Заявки в отдел кадров»
 var RequestList = function (_a) {
     var getUrlRequests = _a.getUrlRequests, getUrlTypes = _a.getUrlTypes, postUrlRequests = _a.postUrlRequests;
-    // requests - список заявок, принимающийся с сервера
+    // requests - список заявок
     var _b = useState([]), requests = _b[0], setRequests = _b[1];
-    // types - типы заявок, принимающихся с сервера
+    // types - типы заявок
     var _c = useState([]), types = _c[0], setTypes = _c[1];
     // selectedType - тип заявки, выбранный в dropDownBox'е
     var _d = useState(""), selectedType = _d[0], setSelectedType = _d[1];
@@ -54,12 +54,12 @@ var RequestList = function (_a) {
     var _e = useState(""), note = _e[0], setNote = _e[1];
     // isSent - флаг, показывающий успешно ли отправлена заявка
     var _f = useState(true), isSent = _f[0], setIsSent = _f[1];
-    // dialogShow - флаг, отвечащий за открытие диалогового окна
+    // dialogShow - флаг, отвечающий за открытие диалогового окна
     var _g = useState(false), dialogShow = _g[0], setDialogShow = _g[1];
     // dropDownBoxRef - ссылка на объект DropDownBox
     var dropDownBoxRef = useRef(null);
     useEffect(function () {
-        // Функция, делающая GET запрос на сервер для получения списка типов заявок
+        // Функция, выполняющая GET запрос на сервер для получения списка типов заявок
         function fetchTypes() {
             return __awaiter(this, void 0, void 0, function () {
                 var response, data, error_1;
@@ -88,7 +88,7 @@ var RequestList = function (_a) {
         fetchTypes();
     }, [getUrlTypes]);
     useEffect(function () {
-        // Функция, делающая GET запрос на сервер для получения списка заявок
+        // Функция, выполняющая GET запрос на сервер для получения списка заявок
         function fetchRequests() {
             return __awaiter(this, void 0, void 0, function () {
                 var response, data, error_2;
@@ -118,21 +118,21 @@ var RequestList = function (_a) {
         setIsSent(false);
     }, [isSent, getUrlRequests]);
     /*Метод, возвращающий название заявки по её id, для dataGrid
-      Также просходит проверка на undefined, чтобы метод find не выбросил исключение*/
+      Также происходит проверка на undefined, чтобы метод find не выбросил исключение*/
     function calculateCellValue(id) {
         var _a, _b;
         return typeof ((_a = types.find(function (type) { return type.ID === id.TypeID; })) === null || _a === void 0 ? void 0 : _a.Name) === 'undefined' ? ""
             : (_b = types.find(function (type) { return type.ID === id.TypeID; })) === null || _b === void 0 ? void 0 : _b.Name;
     }
     /*Метод, возвращающий название заявки по её id, для dropDownBox
-    * Также просходит проверка на undefined, чтобы метод find не выбросил исключение */
+    * Также происходит проверка на undefined, чтобы метод find не выбросил исключение */
     function calculateDropDownBoxValue(id) {
         var _a, _b;
         return typeof ((_a = types.find(function (type) { return type.ID === id; })) === null || _a === void 0 ? void 0 : _a.Name) === 'undefined' ? ""
             : (_b = types.find(function (type) { return type.ID === id; })) === null || _b === void 0 ? void 0 : _b.Name;
     }
     /*Отслеживание клика на кнопку отправить
-    * Происходить POST запрос к серверу и отправка JSON строки
+    * Выполняется POST запрос на серверу и отправка JSON строки
     * Если запрос успешно отправлен, то произойдет обновление таблицы и появится диалоговое окно*/
     function handleSubmit(e) {
         return __awaiter(this, void 0, void 0, function () {

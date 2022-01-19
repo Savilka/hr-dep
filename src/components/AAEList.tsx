@@ -9,20 +9,20 @@ import "../style/style-AAEList.css"
 import "../style/media-queries.css"
 import {useEffect, useRef, useState} from "react";
 
-//Ссылки для fetch запросов
+//Ссылки API
 interface API {
     getUrlAAERequests: string;
     getUrlBuildings: string;
     postUrlAAERequests: string;
 }
 
-//Класс, реализующий контрол «Административно-хозяйственные заявки»
+//Функциональная компонента, реализующая контрол «Административно-хозяйственные заявки»
 const AAEList: React.FC<API> = ({getUrlAAERequests, getUrlBuildings, postUrlAAERequests}) => {
 
-    // buildings - список зданий, принимающийся с сервера
+    // buildings - список зданий
     const [buildings, setBuildings] = useState<IBuilding[]>([]);
 
-    // requests - список заявок, принмающийся с сервера
+    // requests - список заявок
     const [requests, setRequests] = useState<IAAERequest[]>([]);
 
     // inputText - текст заявки
@@ -31,10 +31,10 @@ const AAEList: React.FC<API> = ({getUrlAAERequests, getUrlBuildings, postUrlAAER
     // selectedBuilding - выбранное здание
     const [selectedBuilding, setSelectedBuilding] = useState<IBuilding>({Id: "", Name: "", Rooms: []});
 
-    // selectedCabinet - выбранны кабинет
+    // selectedCabinet - выбранный кабинет
     const [selectedCabinet, setSelectedCabinet] = useState<ICabinet>({Id: "", Name: ""});
 
-    // dialogShow - флаг, отвечащий за открытие диалогового окна
+    // dialogShow - флаг, отвечающий за открытие диалогового окна
     const [dialogShow, setDialogShow] = useState(false);
 
     // isSent - флаг, показывающий успешно ли отправлена заявка
@@ -66,7 +66,7 @@ const AAEList: React.FC<API> = ({getUrlAAERequests, getUrlBuildings, postUrlAAER
     },[getUrlBuildings]);
 
     useEffect(() => {
-        //Метод, делающий GET запрос на сервер для получения списка заявок
+        //Метод, выполняющий GET запрос на сервер для получения списка заявок
         async function fetchRequests() {
             try {
                 const response = await fetch(getUrlAAERequests);
@@ -80,8 +80,8 @@ const AAEList: React.FC<API> = ({getUrlAAERequests, getUrlBuildings, postUrlAAER
         setIsSent(false);
     },[isSent, getUrlAAERequests]);
 
-    /*Отслеживание клика на кнопку отправить
-    * Происходить POST запрос к серверу и отправка JSON строки
+    /*Отслеживание клика на кнопку "отправить"
+    * Выполняется POST запрос на серверу и отправка JSON строки
     * Если запрос успешно отправлен, то произойдет обновление таблицы и появится диалоговое окно*/
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
@@ -118,7 +118,7 @@ const AAEList: React.FC<API> = ({getUrlAAERequests, getUrlBuildings, postUrlAAER
         setSelectedBuilding({Id: "", Name: "", Rooms: []});
         setSelectedCabinet({Id: "", Name: ""});
 
-        // Удаление загруженного файла со старницы
+        // Удаление загруженного файла со страницы
         fileUploaderRef.current?.instance.reset();
     }
 

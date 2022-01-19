@@ -43,20 +43,20 @@ import FileUploader from "devextreme-react/file-uploader";
 import "../style/style-AAEList.css";
 import "../style/media-queries.css";
 import { useEffect, useRef, useState } from "react";
-//Класс, реализующий контрол «Административно-хозяйственные заявки»
+//Функциональная компонента, реализующая контрол «Административно-хозяйственные заявки»
 var AAEList = function (_a) {
     var getUrlAAERequests = _a.getUrlAAERequests, getUrlBuildings = _a.getUrlBuildings, postUrlAAERequests = _a.postUrlAAERequests;
-    // buildings - список зданий, принимающийся с сервера
+    // buildings - список зданий
     var _b = useState([]), buildings = _b[0], setBuildings = _b[1];
-    // requests - список заявок, принмающийся с сервера
+    // requests - список заявок
     var _c = useState([]), requests = _c[0], setRequests = _c[1];
     // inputText - текст заявки
     var _d = useState(""), inputText = _d[0], setInputText = _d[1];
     // selectedBuilding - выбранное здание
     var _e = useState({ Id: "", Name: "", Rooms: [] }), selectedBuilding = _e[0], setSelectedBuilding = _e[1];
-    // selectedCabinet - выбранны кабинет
+    // selectedCabinet - выбранный кабинет
     var _f = useState({ Id: "", Name: "" }), selectedCabinet = _f[0], setSelectedCabinet = _f[1];
-    // dialogShow - флаг, отвечащий за открытие диалогового окна
+    // dialogShow - флаг, отвечающий за открытие диалогового окна
     var _g = useState(false), dialogShow = _g[0], setDialogShow = _g[1];
     // isSent - флаг, показывающий успешно ли отправлена заявка
     var _h = useState(true), isSent = _h[0], setIsSent = _h[1];
@@ -96,7 +96,7 @@ var AAEList = function (_a) {
         fetchBuildings();
     }, [getUrlBuildings]);
     useEffect(function () {
-        //Метод, делающий GET запрос на сервер для получения списка заявок
+        //Метод, выполняющий GET запрос на сервер для получения списка заявок
         function fetchRequests() {
             return __awaiter(this, void 0, void 0, function () {
                 var response, data, error_2;
@@ -125,8 +125,8 @@ var AAEList = function (_a) {
             fetchRequests();
         setIsSent(false);
     }, [isSent, getUrlAAERequests]);
-    /*Отслеживание клика на кнопку отправить
-    * Происходить POST запрос к серверу и отправка JSON строки
+    /*Отслеживание клика на кнопку "отправить"
+    * Выполняется POST запрос на серверу и отправка JSON строки
     * Если запрос успешно отправлен, то произойдет обновление таблицы и появится диалоговое окно*/
     function handleSubmit(e) {
         var _a;
@@ -172,7 +172,7 @@ var AAEList = function (_a) {
                 setInputText("");
                 setSelectedBuilding({ Id: "", Name: "", Rooms: [] });
                 setSelectedCabinet({ Id: "", Name: "" });
-                // Удаление загруженного файла со старницы
+                // Удаление загруженного файла со страницы
                 (_a = fileUploaderRef.current) === null || _a === void 0 ? void 0 : _a.instance.reset();
                 return [2 /*return*/];
             });

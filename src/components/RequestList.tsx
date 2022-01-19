@@ -7,20 +7,20 @@ import {IRequest, IType} from "../Types"
 import "../style/style-RequestList.css"
 import {useEffect, useRef, useState} from "react";
 
-//Ссылки для fetch запросов
+//Ссылки API
 interface API {
     getUrlRequests: string;
     getUrlTypes: string;
     postUrlRequests: string;
 }
 
-//Класс, реализующий контрол «Заявки в отдел кадров»
+//Функциональная компонента, реализующая контрол «Заявки в отдел кадров»
 const RequestList: React.FC<API> = ({getUrlRequests, getUrlTypes, postUrlRequests}) => {
 
-    // requests - список заявок, принимающийся с сервера
+    // requests - список заявок
     const [requests, setRequests] = useState<IRequest[]>([]);
 
-    // types - типы заявок, принимающихся с сервера
+    // types - типы заявок
     const [types, setTypes] = useState<IType[]>([]);
 
     // selectedType - тип заявки, выбранный в dropDownBox'е
@@ -32,14 +32,14 @@ const RequestList: React.FC<API> = ({getUrlRequests, getUrlTypes, postUrlRequest
     // isSent - флаг, показывающий успешно ли отправлена заявка
     const [isSent, setIsSent] = useState(true);
 
-    // dialogShow - флаг, отвечащий за открытие диалогового окна
+    // dialogShow - флаг, отвечающий за открытие диалогового окна
     const [dialogShow, setDialogShow] = useState(false);
 
     // dropDownBoxRef - ссылка на объект DropDownBox
     const dropDownBoxRef = useRef<DropDownBox>(null)
 
     useEffect(() => {
-        // Функция, делающая GET запрос на сервер для получения списка типов заявок
+        // Функция, выполняющая GET запрос на сервер для получения списка типов заявок
         async function fetchTypes() {
             try {
                 const response = await fetch(getUrlTypes);
@@ -55,7 +55,7 @@ const RequestList: React.FC<API> = ({getUrlRequests, getUrlTypes, postUrlRequest
     }, [getUrlTypes]);
 
     useEffect(() => {
-        // Функция, делающая GET запрос на сервер для получения списка заявок
+        // Функция, выполняющая GET запрос на сервер для получения списка заявок
         async function fetchRequests() {
             try {
                 const response = await fetch(getUrlRequests);
@@ -71,21 +71,21 @@ const RequestList: React.FC<API> = ({getUrlRequests, getUrlTypes, postUrlRequest
 
 
     /*Метод, возвращающий название заявки по её id, для dataGrid
-      Также просходит проверка на undefined, чтобы метод find не выбросил исключение*/
+      Также происходит проверка на undefined, чтобы метод find не выбросил исключение*/
     function calculateCellValue(id: IRequest) {
         return typeof (types.find(type => type.ID === id.TypeID)?.Name) === 'undefined' ? ""
             : types.find(type => type.ID === id.TypeID)?.Name;
     }
 
     /*Метод, возвращающий название заявки по её id, для dropDownBox
-    * Также просходит проверка на undefined, чтобы метод find не выбросил исключение */
+    * Также происходит проверка на undefined, чтобы метод find не выбросил исключение */
     function calculateDropDownBoxValue(id: string) {
         return typeof (types.find(type => type.ID === id)?.Name) === 'undefined' ? ""
             : types.find(type => type.ID === id)?.Name;
     }
 
     /*Отслеживание клика на кнопку отправить
-    * Происходить POST запрос к серверу и отправка JSON строки
+    * Выполняется POST запрос на серверу и отправка JSON строки
     * Если запрос успешно отправлен, то произойдет обновление таблицы и появится диалоговое окно*/
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
